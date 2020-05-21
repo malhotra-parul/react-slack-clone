@@ -17,7 +17,8 @@ class Register extends React.Component {
     email: "",
     password: "",
     passwordConfirmation: "",
-    errors: []
+    errors: [],
+    loading: false
   };
 
   handleChange = (event) => {
@@ -30,10 +31,17 @@ class Register extends React.Component {
     event.preventDefault();
     //create user with email and password
     if (this.isFormValid()) {
+      this.setState({errors: [], loading: true})
       auth
         .createUserWithEmailAndPassword(this.state.email, this.state.password)
-        .then((createdUser) => console.log(createdUser))
-        .catch((err) => console.log(err));
+        .then((createdUser) => {
+          console.log(createdUser)
+          this.setState({loading: false});
+        })
+        .catch((err) => {
+          console.log(err)
+          this.setState({ errors: [err, ...this.state.errors], loading: false});
+        });
     }
   };
   displayError = (errors) => errors.map((error, i)=> <p key={i}>{error.message}</p>);
@@ -58,6 +66,7 @@ class Register extends React.Component {
     let error;
 
     if (this.isFormEmpty(this.state)) {
+      
       error = { message: "Fill in all fields" };
       console.log([error, ...errors]);
       this.setState({ errors: [error, ...errors] }, ()=> console.log(this.state.errors) );
@@ -73,7 +82,7 @@ class Register extends React.Component {
   };
 
   render() {
-    const { username, email, passwordConfirmation, password, errors } = this.state;
+    const { username, email, passwordConfirmation, password, errors, loading } = this.state;
     return (
       <Grid textAlign="center" verticalAlign="middle" className="app">
         <Grid.Column style={{ maxWidth: "450px" }}>
@@ -123,7 +132,7 @@ class Register extends React.Component {
                 value={passwordConfirmation}
                 onChange={this.handleChange}
               />
-              <Button size="large" color="pink" fluid>
+              <Button disabled={loading} className={loading? "loading" : ""} size="large" color="pink" fluid>
                 Submit
               </Button>
             </Segment>
