@@ -1,4 +1,5 @@
 import React from "react";
+import firebase from "../firebase";
 import {
   Grid,
   Form,
@@ -9,8 +10,8 @@ import {
   Header,
 } from "semantic-ui-react";
 import { Link } from "react-router-dom";
-import { auth } from "../firebase";
 import md5 from "md5";
+
 
 class Register extends React.Component {
   state = {
@@ -20,6 +21,7 @@ class Register extends React.Component {
     passwordConfirmation: "",
     errors: [],
     loading: false,
+    usersRef: firebase.database().ref("users")
   };
 
   handleChange = (event) => {
@@ -33,15 +35,23 @@ class Register extends React.Component {
     //create user with email and password
     if (this.isFormValid()) {
       this.setState({ errors: [], loading: true });
-      auth
+      firebase.auth()
         .createUserWithEmailAndPassword(this.state.email, this.state.password)
         .then((createdUser) => {
           console.log(createdUser);
           createdUser.user.updateProfile({
             displayName: this.state.username,
             photoURL: `http://gravatar.com/avatar/${md5(createdUser.user.email)}?d=identicon`
-          }).then(()=>this.setState({ loading: false }))
-            .catch(err => this.setState({errors: [err, ...this.state.errors], loading: false}))
+          }).then(()=> {
+            this.saveUser(createdUser).then(()=> {
+                  console.log("user saved!")
+                  this.setState({loading: false})
+                })
+          })
+            .catch(err => {
+              console.log(err);
+              this.setState({errors: [err, ...this.state.errors], loading: false})
+            })
         })
         .catch((err) => {
           console.log(err);
@@ -52,6 +62,14 @@ class Register extends React.Component {
         });
     }
   };
+
+  saveUser = (createdUser)=>{
+    return this.state.usersRef.child(createdUser.user.uid).set({
+      name: createdUser.user.displayName,
+      avatar: createdUser.user.photoURL
+    })
+  };
+
   displayError = (errors) =>
     errors.map((error, i) => <p key={i}>{error.message}</p>);
 
