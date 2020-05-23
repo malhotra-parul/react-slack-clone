@@ -18,7 +18,7 @@ class Register extends React.Component {
     password: "",
     passwordConfirmation: "",
     errors: [],
-    loading: false
+    loading: false,
   };
 
   handleChange = (event) => {
@@ -31,58 +31,84 @@ class Register extends React.Component {
     event.preventDefault();
     //create user with email and password
     if (this.isFormValid()) {
-      this.setState({errors: [], loading: true})
+      this.setState({ errors: [], loading: true });
       auth
         .createUserWithEmailAndPassword(this.state.email, this.state.password)
         .then((createdUser) => {
-          console.log(createdUser)
-          this.setState({loading: false});
+          console.log(createdUser);
+          this.setState({ loading: false });
         })
         .catch((err) => {
-          console.log(err)
-          this.setState({ errors: [err, ...this.state.errors], loading: false});
+          console.log(err);
+          this.setState({
+            errors: [err, ...this.state.errors],
+            loading: false,
+          });
         });
     }
   };
-  displayError = (errors) => errors.map((error, i)=> <p key={i}>{error.message}</p>);
+  displayError = (errors) =>
+    errors.map((error, i) => <p key={i}>{error.message}</p>);
 
-  isFormEmpty = ({username, email, password, passwordConfirmation})=>{
-    return !username.length || !email.length || !password.length || !passwordConfirmation.length;
-  }
+  isFormEmpty = ({ username, email, password, passwordConfirmation }) => {
+    return (
+      !username.length ||
+      !email.length ||
+      !password.length ||
+      !passwordConfirmation.length
+    );
+  };
 
-  isPasswordValid = ({password, passwordConfirmation})=>{
-    if(password.length < 6 || passwordConfirmation.length < 6){
-        return false;
-    }else if(password!==passwordConfirmation){
-        console.log(password, passwordConfirmation);
-        return false;
-    } else{
-        return true;
-    }
-  }
-
-  isFormValid = () => {
-    let errors = [];
-    let error;
-
-    if (this.isFormEmpty(this.state)) {
-      
-      error = { message: "Fill in all fields" };
-      console.log([error, ...errors]);
-      this.setState({ errors: [error, ...errors] }, ()=> console.log(this.state.errors) );
-     
+  isPasswordValid = ({ password, passwordConfirmation }) => {
+    if (password.length < 6 || passwordConfirmation.length < 6) {
       return false;
-    } else if (!this.isPasswordValid(this.state)) {
-      error = { message: "Password is invalid" };
-      this.setState({ errors: [error, ...errors] });  
+    } else if (password !== passwordConfirmation) {
+      console.log(password, passwordConfirmation);
       return false;
     } else {
       return true;
     }
   };
 
+  isFormValid = () => {
+    let errors = [];
+    let error;
+
+    if (this.isFormEmpty(this.state)) {
+      error = { message: "Fill in all fields" };
+      console.log([error, ...errors]);
+      this.setState({ errors: [error, ...errors] }, () =>
+        console.log(this.state.errors)
+      );
+
+      return false;
+    } else if (!this.isPasswordValid(this.state)) {
+      error = { message: "Password is invalid" };
+      this.setState({ errors: [error, ...errors] });
+      return false;
+    } else {
+      return true;
+    }
+  };
+
+  handleInputError = (errors, inputName) => {
+    return errors.some((error) =>
+      error.message.toLowerCase().includes(inputName)
+    )
+      ? "error"
+      : "";
+  };
+
   render() {
-    const { username, email, passwordConfirmation, password, errors, loading } = this.state;
+    const {
+      username,
+      email,
+      passwordConfirmation,
+      password,
+      errors,
+      loading,
+    } = this.state;
+
     return (
       <Grid textAlign="center" verticalAlign="middle" className="app">
         <Grid.Column style={{ maxWidth: "450px" }}>
@@ -100,6 +126,7 @@ class Register extends React.Component {
                 placeholder="Username"
                 type="text"
                 value={username}
+                className={this.handleInputError(errors, "username")}
                 onChange={this.handleChange}
               />
               <Form.Input
@@ -109,6 +136,7 @@ class Register extends React.Component {
                 iconPosition="left"
                 placeholder="Email Address"
                 type="email"
+                className={this.handleInputError(errors, "email")}
                 value={email}
                 onChange={this.handleChange}
               />
@@ -120,6 +148,7 @@ class Register extends React.Component {
                 placeholder="Password"
                 type="password"
                 value={password}
+                className={this.handleInputError(errors, "password")}
                 onChange={this.handleChange}
               />
               <Form.Input
@@ -130,21 +159,26 @@ class Register extends React.Component {
                 placeholder="Re-enter Password"
                 type="password"
                 value={passwordConfirmation}
+                className={this.handleInputError(errors, "password")}
                 onChange={this.handleChange}
               />
-              <Button disabled={loading} className={loading? "loading" : ""} size="large" color="pink" fluid>
+              <Button
+                disabled={loading}
+                className={loading ? "loading" : ""}
+                size="large"
+                color="pink"
+                fluid
+              >
                 Submit
               </Button>
             </Segment>
           </Form>
-          {
-            errors.length>0 && 
-            
-            (<Message error color="red">
-            <h3>Error!</h3>
-            {this.displayError(errors)}
-            </Message>)
-          }
+          {errors.length > 0 && (
+            <Message error color="red">
+              <h3>Error!</h3>
+              {this.displayError(errors)}
+            </Message>
+          )}
           <Message>
             Already a User?<Link to="/login"> Login</Link>
           </Message>
