@@ -10,6 +10,7 @@ import {
 } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { auth } from "../firebase";
+import md5 from "md5";
 
 class Register extends React.Component {
   state = {
@@ -36,7 +37,11 @@ class Register extends React.Component {
         .createUserWithEmailAndPassword(this.state.email, this.state.password)
         .then((createdUser) => {
           console.log(createdUser);
-          this.setState({ loading: false });
+          createdUser.user.updateProfile({
+            displayName: this.state.username,
+            photoURL: `http://gravatar.com/avatar/${md5(createdUser.user.email)}?d=identicon`
+          }).then(()=>this.setState({ loading: false }))
+            .catch(err => this.setState({errors: [err, ...this.state.errors], loading: false}))
         })
         .catch((err) => {
           console.log(err);
