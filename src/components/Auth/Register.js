@@ -135,7 +135,7 @@ class Register extends React.Component {
     return (
       <Grid textAlign="center" verticalAlign="middle" className="app">
         <Grid.Column style={{ maxWidth: "450px" }}>
-          <Header as="h2" icon color="pink" textAlign="center">
+          <Header as="h1" icon color="pink" textAlign="center">
             <Icon name="slack" color="pink" />
             Register for DevSlack
           </Header>
