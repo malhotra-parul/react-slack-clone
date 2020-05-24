@@ -8,6 +8,10 @@ import registerServiceWorker from './registerServiceWorker';
 import { BrowserRouter as Router, Route, Switch, withRouter } from "react-router-dom";
 import firebase from "./components/firebase";
 
+import { createStore } from "redux";
+import { Provider } from "react-redux";
+import { composeWithDevTools } from "redux-devtools-extension";
+
 class Root extends Component {
 
     componentDidMount(){
