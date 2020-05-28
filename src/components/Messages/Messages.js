@@ -1,5 +1,7 @@
 import React, { Component, Fragment } from 'react';
-import { Message, Segment } from 'semantic-ui-react';
+import MessagesHeader from "./MessagesHeader";
+import MessageForm from "./MessageForm";
+import { Segment, Comment } from 'semantic-ui-react';
 
 class Messages extends Component {
 
