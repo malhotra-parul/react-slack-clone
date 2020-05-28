@@ -6,7 +6,7 @@ class MessagesHeader extends Component {
     render() { 
         return ( 
             <Segment clearing>
-                <Header as="h2" floated="left" fluid style={{marginBottom : 0}}>
+                <Header as="h2" floated="left" fluid="true" style={{marginBottom : 0}}>
                     <span>
                     Channel
                     <Icon name="star outline" color="black"/>

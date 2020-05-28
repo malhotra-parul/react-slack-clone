@@ -5,3 +5,17 @@ body,
     height: 100vh;
     background-color: rgb(239, 237, 254);
 }
+
+.messages{
+    height: 440px;
+    overflow-y: scroll;
+}
+
+.message__form{
+    position: fixed !important;
+    bottom: 1em;
+    margin-left: 320px !important;
+    left:0;
+    right: 2em;
+    z-index: 200;
+}
