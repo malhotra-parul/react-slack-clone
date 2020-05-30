@@ -23,6 +23,8 @@ class Messages extends Component {
         }
     }
 
+    displayChannelName = channel => channel ? `${channel.name}` : "";
+
     addListeners = (channelId)=>{
         this.addMessageListener(channelId);
     }
@@ -52,7 +54,8 @@ class Messages extends Component {
         const {currentChannel, messagesRef, messages, user} = this.state;
         return ( 
            <Fragment>
-               <MessagesHeader />
+               <MessagesHeader 
+               channelName={this.displayChannelName(currentChannel)}/>
                
                <Segment>
                     <Comment.Group className="messages">
