@@ -53,7 +53,8 @@ class FileModal extends Component {
                     color="green"
                     inverted
                     onClick={this.sendFile}>
-                        <Icon name="checkmark" /> Send
+                        <Icon name="checkmark" 
+                        /> Send
                     </Button>
                     <Button 
                     color="red"
