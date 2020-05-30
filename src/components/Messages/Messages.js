@@ -1,89 +1,133 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component, Fragment } from "react";
 import MessagesHeader from "./MessagesHeader";
 import MessageForm from "./MessageForm";
-import { Segment, Comment } from 'semantic-ui-react';
+import { Segment, Comment, SearchResult, SearchResults } from "semantic-ui-react";
 import firebase from "../firebase";
 import Message from "./Message";
 
 class Messages extends Component {
+  state = {
+    messagesRef: firebase.database().ref("messages"),
+    currentChannel: this.props.currentChannel,
+    user: this.props.currentUser,
+    messages: [],
+    messagesLoading: true,
+    numberOfUniqueUsers: "",
+    searchTerm: "",
+    searchLoading: false,
+    searchResults: [],
+  };
 
-    state = {
-        messagesRef: firebase.database().ref("messages"),
-        currentChannel: this.props.currentChannel,
-        user: this.props.currentUser,
-        messages: [],
-        messagesLoading: true,
-        numberOfUniqueUsers: ""
+  componentDidMount() {
+    const { user, currentChannel } = this.state;
+
+    if (user && currentChannel) {
+      this.addListeners(currentChannel.id);
     }
+  }
 
-    componentDidMount(){
-        const {user, currentChannel} = this.state;
+  displayChannelName = (channel) => (channel ? `${channel.name}` : "");
 
-        if(user && currentChannel){
-        this.addListeners(currentChannel.id);
-        }
-    }
+  addListeners = (channelId) => {
+    this.addMessageListener(channelId);
+  };
 
-    displayChannelName = channel => channel ? `${channel.name}` : "";
+  addMessageListener = (channelId) => {
+    let loadedMessages = [];
+    this.state.messagesRef.child(channelId).on("child_added", (snap) => {
+      loadedMessages.push(snap.val());
+      this.setState({
+        messages: loadedMessages,
+        messagesLoading: false,
+      });
 
-    addListeners = (channelId)=>{
-        this.addMessageListener(channelId);
-    }
+      this.countUniqueUsers(loadedMessages);
+    });
+  };
 
-    addMessageListener = (channelId) => {
-        let loadedMessages = [];
-        this.state.messagesRef.child(channelId).on("child_added", snap =>{
-            loadedMessages.push(snap.val());
-            this.setState({
-                messages: loadedMessages,
-                messagesLoading: false
-            });
+  countUniqueUsers = (messages) => {
+    const uniqueUsers = messages.reduce((acc, message) => {
+      if (!acc.includes(message.user.name)) {
+        acc.push(message.user.name);
+      }
+      return acc;
+    }, []);
+    const plural =
+      uniqueUsers.length > 1 || uniqueUsers.length === 0 ? "s" : "";
+    this.setState({
+      numberOfUniqueUsers: `${uniqueUsers.length} user${plural}`,
+    });
+  };
 
-            this.countUniqueUsers(loadedMessages);
-        })
-    }
+  displayMessages = (messages) =>
+    messages.length > 0 &&
+    messages.map((message) => (
+      <Message
+        key={message.timestamp}
+        message={message}
+        user={this.state.user}
+      />
+    ));
 
-    countUniqueUsers = messages => {
-        const uniqueUsers = messages.reduce((acc, message)=>{
-            if(!acc.includes(message.user.name)){
-                acc.push(message.user.name);
-            }
-            return acc;
-        }, []);
-        const plural = uniqueUsers.length>1 || uniqueUsers.length === 0 ? "s" : "";
-        this.setState({numberOfUniqueUsers: `${uniqueUsers.length} user${plural}`});
-    }
+  handleSearchChange = (event) => {
+    this.setState(
+      {
+        searchTerm: event.target.value,
+        searchLoading: true,
+      },
+      () => {
+        this.searchMessages();
+      }
+    );
+  };
 
-    displayMessages = (messages) => (
-     
-            messages.length>0 && messages.map(message =>(
-                <Message
-                key={message.timestamp}
-                message={message}
-                user={this.state.user} />
-            ))
-    )
+  searchMessages = () => {
+    const currentMessages = [...this.state.messages];
+    const regex = new RegExp(this.state.searchTerm, "ig");
+    const filteredMessages = currentMessages.reduce((acc, message) => {
+      if (message.content && message.content.match(regex)) {
+        acc.push(message);
+      }
+      return acc;
+    }, []);
+    this.setState({ searchResults: filteredMessages });
+    setTimeout(()=> this.setState({searchLoading: false}), 1000);
+  };
 
-    render() { 
-        const {currentChannel, messagesRef, messages, user, numberOfUniqueUsers} = this.state;
-        return ( 
-           <Fragment>
-               <MessagesHeader 
-               channelName={this.displayChannelName(currentChannel)}
-               numberOfUniqueUsers={numberOfUniqueUsers}/>
-               
-               <Segment>
-                    <Comment.Group className="messages">
-                      {this.displayMessages(messages)}
-                    </Comment.Group>
-               </Segment>
+  render() {
+    const {
+      currentChannel,
+      messagesRef,
+      messages,
+      user,
+      numberOfUniqueUsers,
+      searchResults,
+      searchTerm,
+      searchLoading
+    } = this.state;
+    return (
+      <Fragment>
+        <MessagesHeader
+          channelName={this.displayChannelName(currentChannel)}
+          numberOfUniqueUsers={numberOfUniqueUsers}
+          handleSearchChange={this.handleSearchChange}
+          searchLoading={searchLoading}
+        />
 
-               <MessageForm currentChannel={currentChannel} 
-                            messagesRef={messagesRef}
-                            user={user} />
-           </Fragment>
-         );
-    }
+        <Segment>
+          <Comment.Group className="messages">
+            {searchTerm ? this.displayMessages(searchResults) : this.displayMessages(messages)}
+          </Comment.Group>
+        </Segment>
+
+        <MessageForm
+          currentChannel={currentChannel}
+          messagesRef={messagesRef}
+          user={user}
+        />
+      </Fragment>
+    );
+  }
 }
- 
+
 export default Messages;
