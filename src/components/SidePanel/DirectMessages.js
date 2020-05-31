@@ -39,13 +39,13 @@ class DirectMessages extends Component {
       }
     });
     this.state.presenceRef.on("child_added", (snap) => {
-      console.log(snap);
+      
       if (currentUserUid !== snap.key) {
         this.addStatusToUser(snap.key);
       }
     });
     this.state.presenceRef.on("child_removed", (snap) => {
-      console.log(snap);
+      
       if (currentUserUid !== snap.key) {
         this.addStatusToUser(snap.key, false);
       }
@@ -59,7 +59,7 @@ class DirectMessages extends Component {
       }
       return acc.concat(user);
     }, []);
-    console.log(updatedUsers);
+
     this.setState({ users: updatedUsers });
   };
 
@@ -75,8 +75,7 @@ class DirectMessages extends Component {
   };
   getChannelId = (userId) => {
     const currentUserId = this.state.user.uid;
-    console.log("user id", userId);
-    console.log("currentUserId", currentUserId);
+   
     return userId < currentUserId
       ? `${userId}/${currentUserId}`
       : `${currentUserId}/${userId}`;

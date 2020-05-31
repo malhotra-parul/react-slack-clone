@@ -7,6 +7,7 @@ import Message from "./Message";
 
 class Messages extends Component {
   state = {
+    privateChannel: this.props.isPrivateChannel,
     messagesRef: firebase.database().ref("messages"),
     currentChannel: this.props.currentChannel,
     user: this.props.currentUser,
@@ -26,7 +27,9 @@ class Messages extends Component {
     }
   }
 
-  displayChannelName = (channel) => (channel ? `${channel.name}` : "");
+  displayChannelName = (channel) => { 
+    return (channel ? `${this.state.privateChannel ? "@ " : "# "}${channel.name}` : "");
+  }
 
   addListeners = (channelId) => {
     this.addMessageListener(channelId);
@@ -103,7 +106,8 @@ class Messages extends Component {
       numberOfUniqueUsers,
       searchResults,
       searchTerm,
-      searchLoading
+      searchLoading,
+      privateChannel
     } = this.state;
     return (
       <Fragment>
@@ -112,6 +116,7 @@ class Messages extends Component {
           numberOfUniqueUsers={numberOfUniqueUsers}
           handleSearchChange={this.handleSearchChange}
           searchLoading={searchLoading}
+          isPrivateChannel={privateChannel}
         />
 
         <Segment>
