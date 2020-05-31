@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import MessagesHeader from "./MessagesHeader";
 import MessageForm from "./MessageForm";
-import { Segment, Comment, SearchResult, SearchResults } from "semantic-ui-react";
+import { Segment, Comment } from "semantic-ui-react";
 import firebase from "../firebase";
 import Message from "./Message";
 
