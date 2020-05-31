@@ -8,6 +8,7 @@ import Message from "./Message";
 class Messages extends Component {
   state = {
     privateChannel: this.props.isPrivateChannel,
+    privateMessagesRef: firebase.database().ref("privateMessages"),
     messagesRef: firebase.database().ref("messages"),
     currentChannel: this.props.currentChannel,
     user: this.props.currentUser,
@@ -37,7 +38,9 @@ class Messages extends Component {
 
   addMessageListener = (channelId) => {
     let loadedMessages = [];
-    this.state.messagesRef.child(channelId).on("child_added", (snap) => {
+    const ref = this.getMessagesRef();
+    ref.child(channelId).on("child_added", (snap) => {
+      console.log(snap.val());
       loadedMessages.push(snap.val());
       this.setState({
         messages: loadedMessages,
@@ -84,6 +87,11 @@ class Messages extends Component {
     );
   };
 
+  getMessagesRef = ()=>{
+    const { privateChannel, privateMessagesRef, messagesRef } = this.state;
+    return privateChannel ? privateMessagesRef : messagesRef;
+  }
+
   searchMessages = () => {
     const currentMessages = [...this.state.messages];
     const regex = new RegExp(this.state.searchTerm, "ig");
@@ -129,6 +137,8 @@ class Messages extends Component {
           currentChannel={currentChannel}
           messagesRef={messagesRef}
           user={user}
+          isPrivateChannel={privateChannel}
+          getMessagesRef={this.getMessagesRef}
         />
       </Fragment>
     );

@@ -5,13 +5,13 @@
   
   // Your web app's Firebase configuration
   var firebaseConfig = {
-    apiKey: "AIzaSyChckhW8GzilQxPZ2ybKsSIklmbyNAiA3A",
-    authDomain: "react-slack-clone-ce751.firebaseapp.com",
-    databaseURL: "https://react-slack-clone-ce751.firebaseio.com",
-    projectId: "react-slack-clone-ce751",
-    storageBucket: "react-slack-clone-ce751.appspot.com",
-    messagingSenderId: "7348118071",
-    appId: "1:7348118071:web:433c88a6279cfcb47c95b2"
+    apiKey: "AIzaSyAFPQy_aDD-7x-DnqVXpARTkWhhhz_a_Bk",
+    authDomain: "devslack-be53b.firebaseapp.com",
+    databaseURL: "https://devslack-be53b.firebaseio.com",
+    projectId: "devslack-be53b",
+    storageBucket: "devslack-be53b.appspot.com",
+    messagingSenderId: "868526035264",
+    appId: "1:868526035264:web:77a07e9c38b21816686aa5"
   };
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
