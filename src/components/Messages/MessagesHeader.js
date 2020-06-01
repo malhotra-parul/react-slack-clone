@@ -9,14 +9,22 @@ class MessagesHeader extends Component {
             numberOfUniqueUsers, 
             handleSearchChange, 
             searchLoading, 
-            isPrivateChannel } =  this.props;
+            isPrivateChannel,
+            handleStar,
+            isChannelStarred } =  this.props;
          
         return ( 
             <Segment clearing>
                 <Header as="h2" floated="left" fluid="true" style={{marginBottom : 0}}>
                     <span>
                     {`${channelName} `}
-                    {!isPrivateChannel && <Icon name="star outline" color="black"/>}
+                    {!isPrivateChannel && (
+                    <Icon onClick={handleStar} 
+                          name={isChannelStarred ? "star" : "star outline"}
+                          color={isChannelStarred ? "yellow" : "black"}
+                          />
+                          )
+                    }
                     </span>
                       <Header.Subheader>{numberOfUniqueUsers}</Header.Subheader>
                 </Header>

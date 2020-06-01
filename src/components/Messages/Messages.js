@@ -18,6 +18,8 @@ class Messages extends Component {
     searchTerm: "",
     searchLoading: false,
     searchResults: [],
+    isChannelStarred: false,
+    usersRef: firebase.database().ref("users")
   };
 
   componentDidMount() {
@@ -50,6 +52,36 @@ class Messages extends Component {
       this.countUniqueUsers(loadedMessages);
     });
   };
+
+  handleStar = ()=>{
+    this.setState(prevState => ({
+      isChannelStarred: !prevState.isChannelStarred
+    }), ()=> this.starChannel());
+  }
+
+  starChannel = ()=>{
+    if(this.state.isChannelStarred){
+      this.state.usersRef.child(`${this.state.user.uid}/starred`)
+      .update({
+        [this.state.currentChannel.id]: {
+          name: this.state.currentChannel.name,
+          details: this.state.currentChannel.details,
+          createdBy: {
+            name: this.state.currentChannel.createdBy.name,
+            avatar: this.state.currentChannel.createdBy.avatar
+          }
+        }
+      })
+    }else{
+      this.state.usersRef.child(`${this.state.user.uid}/starred`)
+      .child(
+        this.state.currentChannel.id
+      ).remove(err=>{
+        if(err !== null) console.error(err);
+        
+      })
+        }
+  }
 
   countUniqueUsers = (messages) => {
     const uniqueUsers = messages.reduce((acc, message) => {
@@ -115,7 +147,8 @@ class Messages extends Component {
       searchResults,
       searchTerm,
       searchLoading,
-      privateChannel
+      privateChannel,
+      isChannelStarred
     } = this.state;
     return (
       <Fragment>
@@ -125,6 +158,8 @@ class Messages extends Component {
           handleSearchChange={this.handleSearchChange}
           searchLoading={searchLoading}
           isPrivateChannel={privateChannel}
+          isChannelStarred={isChannelStarred}
+          handleStar={this.handleStar}
         />
 
         <Segment>
