@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Segment, Icon, Accordion, Header, Image } from "semantic-ui-react";
+import { Segment, Icon, Accordion, Header, Image, List } from "semantic-ui-react";
 
 class MetaPanel extends Component {
     state={
@@ -12,13 +12,29 @@ class MetaPanel extends Component {
         const {index} = titleProps;
         const {activeIndex} = this.state;
         const newIndex = index === activeIndex ? -1 : index;
-        console.log("index", index);
-        console.log("active Index", activeIndex);
         this.setState({ activeIndex: newIndex});
     }
 
+    displayPosters = posts => {
+      console.log("posts", posts);
+      
+      return Object.entries(posts).sort((a,b)=> b[1].count - a[1].count).map(([key, val], i) => (
+        <List.Item key={i}>
+          <Image avatar src={val.avatar}/>
+          <List.Content>
+            <List.Header as="a">{key}</List.Header>
+            <List.Description>{this.formatCount(val)}</List.Description>
+          </List.Content>
+        </List.Item> 
+      )).slice(0,5);
+    }
+
+    formatCount = value => (value.count >1 || value.count === 0) ? `${value.count} posts` : `${value.count} post`;
+
     render() { 
         const {activeIndex, isPrivateChannel, channel} = this.state;
+        const { userPosts } = this.props;
+        console.log(userPosts);
 
         if(isPrivateChannel) return null;
         return ( 
@@ -48,7 +64,9 @@ class MetaPanel extends Component {
                       Top Posters
                   </Accordion.Title>
                   <Accordion.Content active={activeIndex === 1}>
-                    posters
+                    <List>
+                    {userPosts && this.displayPosters(userPosts)}
+                    </List>
                   </Accordion.Content>
 
                   <Accordion.Title
