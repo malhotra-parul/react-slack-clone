@@ -36,3 +36,23 @@ body,
 .menu{
     padding-bottom: 2em;
 }
+
+.color__container{
+    cursor: pointer;
+    border-radius: 3px;
+    width: 35px;
+    overflow: hidden;
+    position: relative;
+    margin: 15px 0;
+}
+
+.color__aquare{
+    width: 35px;
+    height: 35px;
+}
+
+.color__overlay{
+    width: 85px;
+    height: 35px;
+    transform: rotate(225deg);
+}

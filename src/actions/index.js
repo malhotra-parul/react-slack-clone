@@ -43,3 +43,14 @@ export const setUserPosts = userPosts => {
         }
     }
 }
+
+//action creator for colors
+
+export const setColors = (primaryColor, secondaryColor) => {
+    return {
+        type: actionTypes.SET_COLORS,
+        payload: {
+            primaryColor, secondaryColor
+        }
+    }
+}
