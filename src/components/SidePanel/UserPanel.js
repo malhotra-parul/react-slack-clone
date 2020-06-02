@@ -1,11 +1,15 @@
 import React, { Component } from 'react';
 import firebase from "../firebase";
-import { Grid, Header, Icon, Dropdown, Image } from "semantic-ui-react";
+import { Grid, Header, Icon, Dropdown, Image, Modal, Input, Button } from "semantic-ui-react";
 
 class UserPanel extends Component {
     state={
-        user: this.props.currentUser
+        user: this.props.currentUser,
+        modal: false
     };
+
+    openModal = ()=> this.setState({modal: true});
+    closeModal = ()=> this.setState({modal: false});
 
     dropdownOptions = ()=>{
         return[
@@ -16,7 +20,7 @@ class UserPanel extends Component {
         },
         {   
             key: "avatar",
-            text: <span>Change Avatar</span>
+            text: <span onClick={this.openModal}>Change Avatar</span>
         },
         { 
             key: "signout",
@@ -35,7 +39,7 @@ class UserPanel extends Component {
     render() { 
         
         const { primaryColor } =  this.props;
-        const { user } = this.state;
+        const { user, modal } = this.state;
         
         return ( 
             <Grid style={{background: primaryColor}}>
@@ -61,6 +65,38 @@ class UserPanel extends Component {
                         } options={this.dropdownOptions()}/>
                      </Header>
                      </Grid.Row>
+                     <Modal basic open={modal} onClose={this.openModal}>
+                        <Modal.Header>Change Avatar</Modal.Header>
+                        <Modal.Content>
+                            <Input
+                            fluid
+                            type="file"
+                            label="New Avatar"
+                            name="previewImage"
+                            />
+                            <Grid centered stackable columns={2}>
+                                <Grid.Row centered>
+                                    <Grid.Column className="ui center aligned grid">
+                                        {/* Image preview */}
+                                    </Grid.Column>
+                                    <Grid.Column>
+                                        {/* Cropped image preview */}
+                                    </Grid.Column>
+                                </Grid.Row>
+                            </Grid>
+                        </Modal.Content>
+                        <Modal.Actions>
+                            <Button inverted color="green">
+                                <Icon name="save"/> Save Avatar
+                            </Button>
+                            <Button inverted color="green">
+                                <Icon name="image"/> Preview
+                            </Button>
+                            <Button inverted color="red" onClick={this.closeModal}>
+                                <Icon name="remove"/> Cancel
+                            </Button>
+                        </Modal.Actions>
+                     </Modal>
                 </Grid.Column>
             </Grid>
          );
