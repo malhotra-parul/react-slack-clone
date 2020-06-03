@@ -16,7 +16,6 @@ class MetaPanel extends Component {
     }
 
     displayPosters = posts => {
-      console.log("posts", posts);
       
       return Object.entries(posts).sort((a,b)=> b[1].count - a[1].count).map(([key, val], i) => (
         <List.Item key={i}>
