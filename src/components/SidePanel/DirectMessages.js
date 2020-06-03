@@ -12,6 +12,7 @@ class DirectMessages extends Component {
     usersRef: firebase.database().ref("users"),
     connectedRef: firebase.database().ref(".info/connected"),
     presenceRef: firebase.database().ref("presence"),
+  
   };
 
   componentDidMount() {
@@ -74,6 +75,8 @@ class DirectMessages extends Component {
     this.props.setCurrentChannel(channelData);
     this.props.setPrivateChannel(true);
     this.setState({activeChannel: user.uid})
+ 
+
   };
   getChannelId = (userId) => {
     const currentUserId = this.state.user.uid;
