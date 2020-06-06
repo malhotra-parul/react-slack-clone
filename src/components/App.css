@@ -107,3 +107,7 @@ body,
         opacity: 0;
     }
 }
+
+.emojipicker {
+    position: absolute;
+}

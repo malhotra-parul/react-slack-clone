@@ -61,7 +61,7 @@ class Messages extends Component {
   addTypingListeners = channelId => {
     let typingUsers = [];
     this.state.typingRef.child(channelId).on("child_added", snap => {
-      if(snap.key !== this.state.user.id){
+      if(snap.key !== this.state.user.uid){
         typingUsers = typingUsers.concat({
           id: snap.key,
           name: snap.val()
