@@ -26,13 +26,15 @@ class Messages extends Component {
     usersRef: firebase.database().ref("users"),
     typingUsers: [],
     typingRef: firebase.database().ref("typing"),
-    connectedRef: firebase.database().ref(".info/connected")
+    connectedRef: firebase.database().ref(".info/connected"),
+    listeners: []
   };
 
   componentDidMount() {
-    const { user, currentChannel } = this.state;
+    const { user, currentChannel, listeners } = this.state;
 
     if (user && currentChannel) {
+      this.removeListeners(listeners);
       this.addListeners(currentChannel.id);
       this.addUserStarsListener(currentChannel.id, user.uid);
     }
@@ -44,8 +46,29 @@ class Messages extends Component {
     }
   }
 
+  componentWillUnmount(){
+    this.removeListeners(this.state.listeners);
+    this.state.connectedRef.off();
+  }
+
   scrollToBottom = () => {
     this.messagesEnd.scrollIntoView({behavior: "smooth"});
+  }
+
+  addToListeners = (id, ref, event)=>{
+    const index = this.state.listeners.findIndex(listener => {
+      return listener.id === id && listener.ref === ref && listener.event === event;
+    })
+    if(index === -1){
+      const newListener = {id, ref,event};
+      this.setState({ listeners: this.state.listeners.concat(newListener)});
+    }
+  }
+
+  removeListeners = (listeners) => {
+    listeners.forEach(listener => {
+      listener.ref.child(listener.id).off(listener.event);
+    })
   }
 
   addUserStarsListener = (channelId, userId) => {
@@ -81,6 +104,8 @@ class Messages extends Component {
       }
     })
 
+    this.addToListeners(channelId, this.state.typingRef, "child_added");
+
     this.state.typingRef.child(channelId).on("child_removed", snap => {
       const index = typingUsers.findIndex(user => user.id === snap.key)
 
@@ -89,6 +114,8 @@ class Messages extends Component {
       this.setState({ typingUsers });
       }
     })
+
+    this.addToListeners(channelId, this.state.typingRef, "child_removed");
 
     this.state.connectedRef.on("value", snap => {
       if(snap.val() === true){
@@ -116,6 +143,8 @@ class Messages extends Component {
       this.countUniqueUsers(loadedMessages);
       this.countUserPosts(loadedMessages);
     });
+
+    this.addToListeners(channelId, ref, "child_added");
   };
 
   handleStar = ()=>{
